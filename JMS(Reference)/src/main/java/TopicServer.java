@@ -8,13 +8,13 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class TopicServer {
-    private volatile StringBuffer cookie = new StringBuffer();
+    private final StringBuffer cookie = new StringBuffer();
     private static final StringBuffer noCookie = new StringBuffer("noCookie");
     private final ObjectMapper mapper = new ObjectMapper();
-    private ConcurrentHashMap<StringBuffer, ConcurrentHashMap<String, ConcurrentLinkedQueue<String>>> oldMap = new ConcurrentHashMap<StringBuffer, ConcurrentHashMap<String, ConcurrentLinkedQueue<String>>>();
-    private ConcurrentHashMap<StringBuffer, ConcurrentHashMap<String, ConcurrentLinkedQueue<String>>> newMap = new ConcurrentHashMap<StringBuffer, ConcurrentHashMap<String, ConcurrentLinkedQueue<String>>>();
 
-    public String getData(final String request, AtomicReference<ConcurrentHashMap<StringBuffer, ConcurrentHashMap<String, ConcurrentLinkedQueue<String>>>> mapOfMapReference) {
+    public String getData(final String request, final AtomicReference<ConcurrentHashMap<StringBuffer, ConcurrentHashMap<String, ConcurrentLinkedQueue<String>>>> mapOfMapReference) {
+        ConcurrentHashMap<StringBuffer, ConcurrentHashMap<String, ConcurrentLinkedQueue<String>>> oldMap = new ConcurrentHashMap<StringBuffer, ConcurrentHashMap<String, ConcurrentLinkedQueue<String>>>();
+        ConcurrentHashMap<StringBuffer, ConcurrentHashMap<String, ConcurrentLinkedQueue<String>>> newMap = new ConcurrentHashMap<StringBuffer, ConcurrentHashMap<String, ConcurrentLinkedQueue<String>>>();
         String cleanRequest = request.replace("topic/", "");
         cookie.append(new Random().nextLong());
         do {
@@ -32,7 +32,9 @@ public class TopicServer {
         return mapOfMapReference.get().get(cookie).get(cleanRequest).poll();
     }
 
-    public String putData(final String request, AtomicReference<ConcurrentHashMap<StringBuffer, ConcurrentHashMap<String, ConcurrentLinkedQueue<String>>>> mapOfMapReference) throws IOException {
+    public String putData(final String request, final AtomicReference<ConcurrentHashMap<StringBuffer, ConcurrentHashMap<String, ConcurrentLinkedQueue<String>>>> mapOfMapReference) throws IOException {
+        ConcurrentHashMap<StringBuffer, ConcurrentHashMap<String, ConcurrentLinkedQueue<String>>> oldMap = new ConcurrentHashMap<StringBuffer, ConcurrentHashMap<String, ConcurrentLinkedQueue<String>>>();
+        ConcurrentHashMap<StringBuffer, ConcurrentHashMap<String, ConcurrentLinkedQueue<String>>> newMap = new ConcurrentHashMap<StringBuffer, ConcurrentHashMap<String, ConcurrentLinkedQueue<String>>>();
         String cleanRequest = request.replace("topic ", "");
         StringReader stringReader = new StringReader(cleanRequest);
         JsonData jsonData = mapper.readValue(stringReader, JsonData.class);

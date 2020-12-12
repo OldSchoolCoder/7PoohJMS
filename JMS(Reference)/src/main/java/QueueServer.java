@@ -8,10 +8,10 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public class QueueServer {
     private final ObjectMapper mapper = new ObjectMapper();
-    private ConcurrentHashMap<String, ConcurrentLinkedQueue<String>> oldMap = new ConcurrentHashMap<String, ConcurrentLinkedQueue<String>>();
-    private ConcurrentHashMap<String, ConcurrentLinkedQueue<String>> newMap = new ConcurrentHashMap<String, ConcurrentLinkedQueue<String>>();
 
-    public String putData(final String request, AtomicReference<ConcurrentHashMap<String, ConcurrentLinkedQueue<String>>> mapReference) throws IOException {
+    public String putData(final String request, final AtomicReference<ConcurrentHashMap<String, ConcurrentLinkedQueue<String>>> mapReference) throws IOException {
+        ConcurrentHashMap<String, ConcurrentLinkedQueue<String>> oldMap = new ConcurrentHashMap<String, ConcurrentLinkedQueue<String>>();
+        ConcurrentHashMap<String, ConcurrentLinkedQueue<String>> newMap = new ConcurrentHashMap<String, ConcurrentLinkedQueue<String>>();
         String cleanRequest = request.replace("queue ", "");
         StringReader stringReader = new StringReader(cleanRequest);
         JsonData jsonData = mapper.readValue(stringReader, JsonData.class);
@@ -31,6 +31,8 @@ public class QueueServer {
     }
 
     public String getData(final String request, final AtomicReference<ConcurrentHashMap<String, ConcurrentLinkedQueue<String>>> mapReference) {
+        ConcurrentHashMap<String, ConcurrentLinkedQueue<String>> oldMap = new ConcurrentHashMap<String, ConcurrentLinkedQueue<String>>();
+        ConcurrentHashMap<String, ConcurrentLinkedQueue<String>> newMap = new ConcurrentHashMap<String, ConcurrentLinkedQueue<String>>();
         String cleanRequest = request.replace("queue/", "");
         do {
             oldMap = mapReference.get();
