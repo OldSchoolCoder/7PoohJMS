@@ -1,3 +1,4 @@
+import java.util.HashMap;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -5,11 +6,11 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public class RequestDispatcher implements Callable<String> {
     private final String request;
-    private final AtomicReference<ConcurrentHashMap<String, ConcurrentLinkedQueue<String>>> mapReference;
-    private final AtomicReference<ConcurrentHashMap<StringBuffer, ConcurrentHashMap<String, ConcurrentLinkedQueue<String>>>> mapOfMapReference;
+    private final AtomicReference<HashMap<String, ConcurrentLinkedQueue<String>>> mapReference;
+    private final AtomicReference<HashMap<String, ConcurrentHashMap<String, ConcurrentLinkedQueue<String>>>> mapOfMapReference;
     private final QueueServer queueServer = new QueueServer();
 
-    public RequestDispatcher(final String request, final AtomicReference<ConcurrentHashMap<String, ConcurrentLinkedQueue<String>>> mapReference, final AtomicReference<ConcurrentHashMap<StringBuffer, ConcurrentHashMap<String, ConcurrentLinkedQueue<String>>>> mapOfMapReference) {
+    public RequestDispatcher(final String request, final AtomicReference<HashMap<String, ConcurrentLinkedQueue<String>>> mapReference, final AtomicReference<HashMap<String, ConcurrentHashMap<String, ConcurrentLinkedQueue<String>>>> mapOfMapReference) {
         this.request = request;
         this.mapReference = mapReference;
         this.mapOfMapReference = mapOfMapReference;

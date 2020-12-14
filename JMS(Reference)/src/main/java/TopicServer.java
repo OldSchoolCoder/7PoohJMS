@@ -2,21 +2,21 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.util.HashMap;
 import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class TopicServer {
-    private final StringBuffer cookie = new StringBuffer();
-    private static final StringBuffer noCookie = new StringBuffer("noCookie");
+    private final String cookie = String.valueOf(new Random().nextLong());
+    private static final String noCookie = "noCookie";
     private final ObjectMapper mapper = new ObjectMapper();
 
-    public String getData(final String request, final AtomicReference<ConcurrentHashMap<StringBuffer, ConcurrentHashMap<String, ConcurrentLinkedQueue<String>>>> mapOfMapReference) {
-        ConcurrentHashMap<StringBuffer, ConcurrentHashMap<String, ConcurrentLinkedQueue<String>>> oldMap = new ConcurrentHashMap<StringBuffer, ConcurrentHashMap<String, ConcurrentLinkedQueue<String>>>();
-        ConcurrentHashMap<StringBuffer, ConcurrentHashMap<String, ConcurrentLinkedQueue<String>>> newMap = new ConcurrentHashMap<StringBuffer, ConcurrentHashMap<String, ConcurrentLinkedQueue<String>>>();
+    public String getData(final String request, final AtomicReference<HashMap<String, ConcurrentHashMap<String, ConcurrentLinkedQueue<String>>>> mapOfMapReference) {
+        var newMap = new HashMap<String, ConcurrentHashMap<String, ConcurrentLinkedQueue<String>>>();
+        var oldMap = new HashMap<String, ConcurrentHashMap<String, ConcurrentLinkedQueue<String>>>();
         String cleanRequest = request.replace("topic/", "");
-        cookie.append(new Random().nextLong());
         do {
             oldMap = mapOfMapReference.get();
             if (!oldMap.isEmpty()) {
@@ -32,9 +32,9 @@ public class TopicServer {
         return mapOfMapReference.get().get(cookie).get(cleanRequest).poll();
     }
 
-    public String putData(final String request, final AtomicReference<ConcurrentHashMap<StringBuffer, ConcurrentHashMap<String, ConcurrentLinkedQueue<String>>>> mapOfMapReference) throws IOException {
-        ConcurrentHashMap<StringBuffer, ConcurrentHashMap<String, ConcurrentLinkedQueue<String>>> oldMap = new ConcurrentHashMap<StringBuffer, ConcurrentHashMap<String, ConcurrentLinkedQueue<String>>>();
-        ConcurrentHashMap<StringBuffer, ConcurrentHashMap<String, ConcurrentLinkedQueue<String>>> newMap = new ConcurrentHashMap<StringBuffer, ConcurrentHashMap<String, ConcurrentLinkedQueue<String>>>();
+    public String putData(final String request, final AtomicReference<HashMap<String, ConcurrentHashMap<String, ConcurrentLinkedQueue<String>>>> mapOfMapReference) throws IOException {
+        var newMap = new HashMap<String, ConcurrentHashMap<String, ConcurrentLinkedQueue<String>>>();
+        var oldMap = new HashMap<String, ConcurrentHashMap<String, ConcurrentLinkedQueue<String>>>();
         String cleanRequest = request.replace("topic ", "");
         StringReader stringReader = new StringReader(cleanRequest);
         JsonData jsonData = mapper.readValue(stringReader, JsonData.class);
@@ -49,7 +49,7 @@ public class TopicServer {
                 break;
             }
         } while (!mapOfMapReference.compareAndSet(oldMap, newMap));
-        for (ConcurrentHashMap.Entry<StringBuffer, ConcurrentHashMap<String, ConcurrentLinkedQueue<String>>> bigMapElement : mapOfMapReference.get().entrySet()) {
+        for (ConcurrentHashMap.Entry<String, ConcurrentHashMap<String, ConcurrentLinkedQueue<String>>> bigMapElement : mapOfMapReference.get().entrySet()) {
             if (!bigMapElement.getValue().containsKey(nameOfQueue)) {
                 bigMapElement.getValue().put(nameOfQueue, new ConcurrentLinkedQueue<String>());
             }

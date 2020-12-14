@@ -2,6 +2,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicReference;
@@ -9,9 +10,9 @@ import java.util.concurrent.atomic.AtomicReference;
 public class QueueServer {
     private final ObjectMapper mapper = new ObjectMapper();
 
-    public String putData(final String request, final AtomicReference<ConcurrentHashMap<String, ConcurrentLinkedQueue<String>>> mapReference) throws IOException {
-        ConcurrentHashMap<String, ConcurrentLinkedQueue<String>> oldMap = new ConcurrentHashMap<String, ConcurrentLinkedQueue<String>>();
-        ConcurrentHashMap<String, ConcurrentLinkedQueue<String>> newMap = new ConcurrentHashMap<String, ConcurrentLinkedQueue<String>>();
+    public String putData(final String request, final AtomicReference<HashMap<String, ConcurrentLinkedQueue<String>>> mapReference) throws IOException {
+        var oldMap = new HashMap<String, ConcurrentLinkedQueue<String>>();
+        var newMap = new HashMap<String, ConcurrentLinkedQueue<String>>();
         String cleanRequest = request.replace("queue ", "");
         StringReader stringReader = new StringReader(cleanRequest);
         JsonData jsonData = mapper.readValue(stringReader, JsonData.class);
@@ -30,9 +31,9 @@ public class QueueServer {
         return "ignoreResponse";
     }
 
-    public String getData(final String request, final AtomicReference<ConcurrentHashMap<String, ConcurrentLinkedQueue<String>>> mapReference) {
-        ConcurrentHashMap<String, ConcurrentLinkedQueue<String>> oldMap = new ConcurrentHashMap<String, ConcurrentLinkedQueue<String>>();
-        ConcurrentHashMap<String, ConcurrentLinkedQueue<String>> newMap = new ConcurrentHashMap<String, ConcurrentLinkedQueue<String>>();
+    public String getData(final String request, final AtomicReference<HashMap<String, ConcurrentLinkedQueue<String>>> mapReference) {
+        var oldMap = new HashMap<String, ConcurrentLinkedQueue<String>>();
+        var newMap = new HashMap<String, ConcurrentLinkedQueue<String>>();
         String cleanRequest = request.replace("queue/", "");
         do {
             oldMap = mapReference.get();

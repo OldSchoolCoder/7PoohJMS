@@ -1,6 +1,7 @@
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.HashMap;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -9,9 +10,8 @@ public class SocketBox {
     private final static ExecutorService pool = Executors.newFixedThreadPool(
             Runtime.getRuntime().availableProcessors()
     );
-    private final static AtomicReference<ConcurrentHashMap<String, ConcurrentLinkedQueue<String>>> mapReference = new AtomicReference<>(new ConcurrentHashMap<>());
-    private final static AtomicReference<ConcurrentHashMap<StringBuffer, ConcurrentHashMap<String, ConcurrentLinkedQueue<String>>>> mapOfMapReference = new AtomicReference<>(new ConcurrentHashMap<>());
-
+    private final static AtomicReference<HashMap<String, ConcurrentLinkedQueue<String>>> mapReference = new AtomicReference<>(new HashMap<>());
+    private final static AtomicReference<HashMap<String, ConcurrentHashMap<String, ConcurrentLinkedQueue<String>>>> mapOfMapReference = new AtomicReference<>(new HashMap<>());
 
     public static void main(String[] args) throws IOException, ExecutionException, InterruptedException {
         try (ServerSocket socket = new ServerSocket(8000);) {
