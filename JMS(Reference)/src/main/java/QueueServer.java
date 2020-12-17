@@ -20,12 +20,8 @@ public class QueueServer {
         String nameOfQueue = jsonData.getNameOfQueue();
         do {
             oldMap = mapReference.get();
-            if (!oldMap.containsKey(nameOfQueue)) {
-                oldMap.put(nameOfQueue, new ConcurrentLinkedQueue<String>());
-                newMap = oldMap;
-            } else {
-                break;
-            }
+            oldMap.putIfAbsent(nameOfQueue, new ConcurrentLinkedQueue<String>());
+            newMap = oldMap;
         } while (!mapReference.compareAndSet(oldMap, newMap));
         mapReference.get().get(nameOfQueue).add(text);
         return "ignoreResponse";

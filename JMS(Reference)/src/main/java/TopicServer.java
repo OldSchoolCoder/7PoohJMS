@@ -20,9 +20,7 @@ public class TopicServer {
         do {
             oldMap = mapOfMapReference.get();
             if (!oldMap.isEmpty()) {
-                if (!oldMap.containsKey(cookie)) {
-                    oldMap.put(cookie, oldMap.get(noCookie));
-                }
+                oldMap.putIfAbsent(cookie, oldMap.get(noCookie));
                 newMap = oldMap;
             } else {
                 oldMap.put(cookie, new ConcurrentHashMap<String, ConcurrentLinkedQueue<String>>());
@@ -42,17 +40,11 @@ public class TopicServer {
         String nameOfQueue = jsonData.getNameOfQueue();
         do {
             oldMap = mapOfMapReference.get();
-            if (!oldMap.containsKey(noCookie)) {
-                oldMap.put(noCookie, new ConcurrentHashMap<String, ConcurrentLinkedQueue<String>>());
-                newMap = oldMap;
-            } else {
-                break;
-            }
+            oldMap.putIfAbsent(noCookie, new ConcurrentHashMap<String, ConcurrentLinkedQueue<String>>());
+            newMap = oldMap;
         } while (!mapOfMapReference.compareAndSet(oldMap, newMap));
         for (ConcurrentHashMap.Entry<String, ConcurrentHashMap<String, ConcurrentLinkedQueue<String>>> bigMapElement : mapOfMapReference.get().entrySet()) {
-            if (!bigMapElement.getValue().containsKey(nameOfQueue)) {
-                bigMapElement.getValue().put(nameOfQueue, new ConcurrentLinkedQueue<String>());
-            }
+            bigMapElement.getValue().putIfAbsent(nameOfQueue, new ConcurrentLinkedQueue<String>());
             for (ConcurrentHashMap.Entry<String, ConcurrentLinkedQueue<String>> smallMapElement : bigMapElement.getValue().entrySet()) {
                 if (smallMapElement.getKey().equals(nameOfQueue)) {
                     smallMapElement.getValue().add(text);
